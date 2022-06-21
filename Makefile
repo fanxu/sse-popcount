@@ -19,6 +19,9 @@ FLAGS_ARM=$(FLAGS) -mfpu=neon -DHAVE_NEON_INSTRUCTIONS
 # It seems that for AArch64 no extra flags are needed (NEON is always available)
 FLAGS_AARCH64=$(FLAGS) -DHAVE_NEON_INSTRUCTIONS -DHAVE_AARCH64_ARCHITECTURE
 
+FLAGS_ARMV8=$(FLAGS) -march=armv8.2-a -DHAVE_NEON_INSTRUCTIONS -DHAVE_AARCH64_ARCHITECTURE
+FLAGS_GRAVITON=$(FLAGS) -mcpu=neoverse-n1 -DHAVE_NEON_INSTRUCTIONS -DHAVE_AARCH64_ARCHITECTURE
+
 FLAGS_SSE=$(FLAGS_INTEL) -mssse3 -DHAVE_SSE_INSTRUCTIONS
 FLAGS_AVX=$(FLAGS_INTEL) -mavx -DHAVE_AVX_INSTRUCTIONS
 FLAGS_AVX2=$(FLAGS_INTEL) -mavx2 -DHAVE_AVX2_INSTRUCTIONS
@@ -127,6 +130,18 @@ speed_aarch64_$(COMPILER): $(DEPS) speed.cpp
 verify_aarch64_$(COMPILER): $(DEPS) verify.cpp
 	$(CXX) $(FLAGS_AARCH64) verify.cpp -o $@
 
+speed_armv8_$(COMPILER): $(DEPS) speed.cpp
+	$(CXX) $(FLAGS_ARMV8) speed.cpp -o $@
+
+verify_armv8_$(COMPILER): $(DEPS) verify.cpp
+	$(CXX) $(FLAGS_ARMV8) verify.cpp -o $@
+
+speed_graviton_$(COMPILER): $(DEPS) speed.cpp
+	$(CXX) $(FLAGS_GRAVITON) speed.cpp -o $@
+
+verify_graviton_$(COMPILER): $(DEPS) verify.cpp
+	$(CXX) $(FLAGS_GRAVITON) verify.cpp -o $@
+
 speed: speed_$(COMPILER)
 speed_avx: speed_avx_$(COMPILER)
 speed_avx2: speed_avx2_$(COMPILER)
@@ -134,6 +149,8 @@ speed_avx512bw: speed_avx512bw_$(COMPILER)
 speed_avx512vbmi: speed_avx512vbmi_$(COMPILER)
 speed_arm: speed_arm_$(COMPILER)
 speed_aarch64: speed_aarch64_$(COMPILER)
+speed_armv8: speed_armv8_$(COMPILER)
+speed_graviton: speed_graviton_$(COMPILER)
 
 verify: verify_$(COMPILER)
 verify_avx: verify_avx_$(COMPILER)
@@ -142,6 +159,8 @@ verify_avx512bw: verify_avx512bw_$(COMPILER)
 verify_avx512vbmi: verify_avx512vbmi_$(COMPILER)
 verify_arm: verify_arm_$(COMPILER)
 verify_aarch64: verify_aarch64_$(COMPILER)
+verify_armv8: verify_armv8_$(COMPILER)
+verify_graviton: verify_graviton_$(COMPILER)
 
 
 build-all: $(ALL_TARGETS)
